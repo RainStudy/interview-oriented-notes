@@ -816,29 +816,29 @@ public static interface IdleHandler {
 
 > ### ANR 的原因
 >
-    > - **系统进程(system_server)** 调度，设置定时监控（即埋下炸弹）
+> - **系统进程(system_server)** 调度，设置定时监控（即埋下炸弹）
 > - system_server 进程将任务派发到**应用进程**完成对消息的实际处理(执行任务)
-    > - 最后，执行任务时间过长，在定时器超时前 system_server 还**未收到任务完成的通知**，触发 ANR（炸弹爆炸）
+> - 最后，执行任务时间过长，在定时器超时前 system_server 还**未收到任务完成的通知**，触发 ANR（炸弹爆炸）
 
-    没有及时处理 system_server 派发的任务，system_server 没有收到任务完成的通知，就触发了 ANR。
+没有及时处理 system_server 派发的任务，system_server 没有收到任务完成的通知，就触发了 ANR。
 
 ### handler looper messagequeue是怎么个关系一对一还是一对多，多对多
 
-    Looper 跟 MessageQueue 是一对一的关系。MessageQueue 跟 Handler 是一对多的关系。
+Looper 跟 MessageQueue 是一对一的关系。MessageQueue 跟 Handler 是一对多的关系。
 
 ### looper和thread是一对一的关系是如何实现的
 
-    使用 ThreadLocal 保存 Looper 实例
+使用 ThreadLocal 保存 Looper 实例
 
 ### threadlocal是什么，有用过吗
 
-    ThreadLocal 本质上是保存在 Thread 上面的一张 HashMap，不同之处在与它的键使用 WeakReference 存储，在 set 时会清理 key == null 的键值对。但用完的时候最好手动 remove，不然还是会内存泄漏。使用弱引用只是让 ThreadLocalMap 持有的 ThreadLocal 不会内存泄漏，ThreadLocal 对应的值还是会内存泄漏。
+ThreadLocal 本质上是保存在 Thread 上面的一张 HashMap，不同之处在与它的键使用 WeakReference 存储，在 set 时会清理 key == null 的键值对。但用完的时候最好手动 remove，不然还是会内存泄漏。使用弱引用只是让 ThreadLocalMap 持有的 ThreadLocal 不会内存泄漏，ThreadLocal 对应的值还是会内存泄漏。
 
 ### messagequeue是什么数据结构
 
-    链表实现的优先队列
+链表实现的优先队列
 
 ### 延迟消息是如何实现的
 
-    消息队列是一个优先队列，插入时进行排序。插入时如果消息处于头部，且事件队列处于等待状态就唤醒它，Looper 拿了头部的消息就会 `pollOnce` 等待这个消息需要等待的时间后再将消息出队传递给 Handler。如果有队列顶部有同步屏障的话，最早的异步消息将会进行唤醒处理。
+消息队列是一个优先队列，插入时进行排序。插入时如果消息处于头部，且事件队列处于等待状态就唤醒它，Looper 拿了头部的消息就会 `pollOnce` 等待这个消息需要等待的时间后再将消息出队传递给 Handler。如果有队列顶部有同步屏障的话，最早的异步消息将会进行唤醒处理。
 
